@@ -1,0 +1,36 @@
+{
+  "timeZone": "Europe/Berlin",
+  "dependencies": {},
+  "exceptionLogging": "STACKDRIVER",
+  "oauthScopes": [
+    "https://www.googleapis.com/auth/gmail.readonly",
+    "https://www.googleapis.com/auth/gmail.labels",
+    "https://www.googleapis.com/auth/gmail.addons.execute",
+    "https://www.googleapis.com/auth/script.external_request",
+    "https://www.googleapis.com/auth/script.scriptapp",
+    "https://www.googleapis.com/auth/drive",
+    "https://www.googleapis.com/auth/script.locale"
+  ],
+  "urlFetchWhitelist": ["https://api.openai.com/"],
+  "runtimeVersion": "V8",
+  "addOns": {
+    "common": {
+      "name": "Receipt Finder",
+      "logoUrl": "https://example.com/logo.png",
+      "useLocaleFromApp": true,
+      "openLinkUrlPrefixes": ["https://"],
+      "universalActions": [
+        {
+          "label": "About",
+          "openLink": "https://example.com/about"
+        }
+      ],
+      "homepageTrigger": {
+        "runFunction": "onHomepage"
+      }
+    },
+    "gmail": {
+      "authorizationCheckFunction": "onInstall"
+    }
+  }
+}
