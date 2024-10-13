@@ -330,11 +330,16 @@ function getOpenAIApiKey() {
 }
 
 function checkIfReceipt(emailBody, attachments) {
+  Logger.log("Starting checkIfReceipt function");
   Logger.log("Checking if email is a receipt");
+  Logger.log(`Email body length: ${emailBody.length}`);
+  Logger.log(`Number of attachments: ${attachments.length}`);
+
   const attachmentInfo = attachments.map((att) => ({
     name: att.getName(),
     type: att.getContentType(),
   }));
+  Logger.log(`Attachment info: ${JSON.stringify(attachmentInfo)}`);
 
   const payload = {
     model: "gpt-4o",
@@ -392,6 +397,7 @@ Provide your analysis in the required JSON format.`,
     },
   };
 
+  Logger.log("Preparing to call OpenAI API");
   const options = {
     method: "post",
     contentType: "application/json",
@@ -401,14 +407,19 @@ Provide your analysis in the required JSON format.`,
   };
 
   try {
+    Logger.log("Calling OpenAI API");
     const response = UrlFetchApp.fetch(OPENAI_API_URL, options);
+    Logger.log(`OpenAI API response status: ${response.getResponseCode()}`);
     const data = JSON.parse(response.getContentText());
     if (data.error) {
       throw new Error(`OpenAI API Error: ${data.error.message}`);
     }
-    return JSON.parse(data.choices[0].message.content);
+    const result = JSON.parse(data.choices[0].message.content);
+    Logger.log(`OpenAI API result: ${JSON.stringify(result)}`);
+    return result;
   } catch (error) {
     console.error("Error calling OpenAI API or parsing response:", error);
+    Logger.log(`Error in checkIfReceipt: ${error.message}`);
     return {
       is_receipt: false,
       attachments_sufficient: false,
@@ -510,6 +521,7 @@ function prepareMetadataEntry(emailMessage, attachmentLinks, notes, status) {
   const timestamp = new Date();
   const date = emailMessage.getDate();
   const gmailLink = getGmailLink(emailMessage);
+  const subject = emailMessage.getSubject() || "No Subject"; // Fallback if subject is empty
 
   return {
     emailMessageId: emailMessage.getId(),
@@ -524,7 +536,7 @@ function prepareMetadataEntry(emailMessage, attachmentLinks, notes, status) {
         case "drive link":
           return ""; // Placeholder to be updated later
         case "gmail link":
-          return gmailLink;
+          return `=HYPERLINK("${gmailLink}", "${subject.replace(/"/g, '""')}")`;
         case "notes":
           return notes;
         default:
