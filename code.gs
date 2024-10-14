@@ -18,7 +18,7 @@ const SPREADSHEET_HEADERS = [
   "Notes",
 ];
 
-const BATCH_SIZE = 20;
+const BATCH_SIZE = 50;
 const MAX_EXECUTION_TIME = 5.5 * 60 * 1000; // 5.5 minutes in milliseconds
 
 // Installation and setup
